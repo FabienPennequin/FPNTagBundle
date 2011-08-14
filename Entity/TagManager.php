@@ -27,9 +27,6 @@ class TagManager extends BaseTagManager
         $this->slugifier = $slugifier;
     }
 
-    }
-
-
     /**
      * @see DoctrineExtensions\Taggable\TagManager::createTag()
      */
