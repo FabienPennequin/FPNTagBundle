@@ -4,11 +4,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="FPN\TagBundle\Entity\Tag" table="fpn_tag_tag">
-
-        <id name="id" column="id" type="integer">
-            <generator strategy="AUTO" />
-        </id>
+    <mapped-superclass name="FPN\TagBundle\Entity\Tag" table="fpn_tag_tag">
 
         <field name="name"          column="name"           type="string"   length="50"     unique="true" />
         <field name="slug"          column="slug"           type="string"   length="50"     unique="true" />
@@ -16,8 +12,8 @@
         <field name="createdAt"     column="created_at"     type="datetime" />
         <field name="updatedAt"     column="updated_at"     type="datetime" />
 
-        <one-to-many field="tagging" target-entity="FPN\TagBundle\Entity\Tagging" mapped-by="tag" />
+        <!-- <one-to-many field="tagging" target-entity="FPN\TagBundle\Entity\Tagging" mapped-by="tag" /> -->
 
-    </entity>
+    </mapped-superclass>
 
 </doctrine-mapping>

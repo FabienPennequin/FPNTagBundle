@@ -20,13 +20,21 @@ class FPNTagExtension extends Extension
     /**
      * Loads the extension configuration.
      *
-     * @param array            $config    An array of configuration settings
-     * @param ContainerBuilder $container A ContainerBuilder instance
+     * @param array             $configs     An array of configuration settings
+     * @param ContainerBuilder  $container   A ContainerBuilder instance
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('orm.xml');
         $loader->load('util.xml');
+
+        $container->setParameter('fpn_tag.entity.tag.class', $config['model']['tag_class']);
+        $container->setParameter('fpn_tag.entity.tagging.class', $config['model']['tagging_class']);
+
+        $container->setAlias('fpn_tag.slugifier', $config['service']['slugifier']);
     }
 }

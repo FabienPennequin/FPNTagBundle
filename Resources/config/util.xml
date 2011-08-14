@@ -9,7 +9,7 @@
     </parameters>
 
     <services>
-        <service id="fpn_tag.slugifier" class="%fpn_tag.slugifier.class%">
+        <service id="fpn_tag.slugifier.default" class="%fpn_tag.slugifier.class%">
         </service>
     </services>
 
