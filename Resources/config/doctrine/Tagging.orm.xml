@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="FPN\TagBundle\Entity\Tagging" table="fpn_tag_tagging">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <field name="resourceType"  column="resource_type"  type="string" length="50" />
+        <field name="resourceId"    column="resource_id"    type="string" length="50" />
+
+        <field name="createdAt"     column="created_at"     type="datetime" />
+        <field name="updatedAt"     column="updated_at"     type="datetime" />
+
+        <many-to-one field="tag" target-entity="FPN\TagBundle\Entity\Tag">
+            <join-columns>
+                <join-column name="tag_id" referenced-column-name="id" />
+            </join-columns>
+        </many-to-one>
+
+        <unique-constraints>
+            <unique-constraint columns="tag_id,resource_type,resource_id" name="tagging_idx" />
+        </unique-constraints>
+
+    </entity>
+
+</doctrine-mapping>
