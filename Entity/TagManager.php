@@ -11,26 +11,33 @@
 namespace FPN\TagBundle\Entity;
 
 use DoctrineExtensions\Taggable\TagManager as BaseTagManager;
+use Doctrine\ORM\EntityManager;
+use FPN\TagBundle\Util\SlugifierInterface;
 
 class TagManager extends BaseTagManager
 {
+    protected $slugifier;
+
+    /**
+     * @see DoctrineExtensions\Taggable\TagManager::__construct()
+     */
+    public function __construct(EntityManager $em, $tagClass = null, $taggingClass = null, SlugifierInterface $slugifier)
+    {
+        parent::__construct($em, $tagClass, $taggingClass);
+        $this->slugifier = $slugifier;
+    }
+
+    }
+
+
     /**
      * @see DoctrineExtensions\Taggable\TagManager::createTag()
      */
     protected function createTag($name)
     {
         $tag = parent::createTag($name);
-        $tag->setSlug($this->generateSlug($name));
+        $tag->setSlug($this->slugifier->slugify($name));
 
         return $tag;
-    }
-
-    protected function generateSlug($name)
-    {
-        $slug = mb_convert_case($name, MB_CASE_LOWER, mb_detect_encoding($name));
-        $slug = str_replace(' ', '-', $slug);
-        $slug = str_replace('--', '-', $slug);
-
-        return $slug;
     }
 }
