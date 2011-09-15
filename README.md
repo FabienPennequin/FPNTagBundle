@@ -1,0 +1,223 @@
+FPNTagBundle
+============
+
+This bundles adds tagging to your Symfony project, with the ability to associate
+tags with any number of different entities. This bundle integrates the
+[DoctrineExtensions-Taggable](https://github.com/FabienPennequin/DoctrineExtensions-Taggable)
+library, which handles most of the hard work.
+
+**Navigation**
+
+1. [Installation](#installation)
+2. [Making an entity taggable](#taggable-entity)
+3. [Using Tags](#using-tags)
+
+<a name="installation"></a>
+
+## Installation
+
+Start by adding the following entries to your `deps` file:
+
+### Using the `deps` file
+
+```
+; Taggable stuff
+[doctrine-extensions-taggable]
+    git=git://github.com/FabienPennequin/DoctrineExtensions-Taggable.git
+
+[FPNTagBundle]
+    git=git://github.com/FabienPennequin/FPNTagBundle.git
+    target=bundles/FPN/TagBundle
+```
+
+### Update the autoloader
+
+Next, update your autoloader and add the following entry:
+
+    // app/autoload.php
+    $loader->registerNamespaces(array(
+        // ...
+        'FPN'               => __DIR__.'/../vendor/bundles',
+    ));
+
+### Register the bundle
+
+To start using the bundle, register it in your Kernel. This file is usually
+located at `app/AppKernel`:
+
+    public function registerBundles()
+    {
+        $bundles = array(
+            // ...
+            new FPN\TagBundle\FPNTagBundle(),
+        );
+    )
+
+### Create your `Tag` and `Tagging` entities
+
+To use this bundle, you'll need to create two new entities: `Tag` and `Tagging`.
+You place these in any bundle, but each should look like this:
+
+```php
+<?php
+
+namespace Acme\TagBundle\Entity;
+
+use FPN\TagBundle\Entity\Tag as BaseTag;
+
+class Tag extends BaseTag
+{
+}
+```
+
+```php
+<?php
+
+namespace Acme\TagBundle\Entity;
+
+use \FPN\TagBundle\Entity\Tagging as BaseTagging;
+
+class Tagging extends BaseTagging
+{
+}
+```
+
+Next, you'll need to add a little bit of mapping information. The easiest
+way to do this is to create the following two XML files and place them in
+the `Resources/config/doctrine` directory of your bundle:
+
+*src/Acme/TagBundle/Resources/config/doctrine/Tag.orm.xml*:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Acme\TagBundle\Entity\Tag" table="acme_tag">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <one-to-many field="tagging" target-entity="Acme\TagBundle\Entity\Tagging" mapped-by="tag" fetch="EAGER" />
+
+    </entity>
+
+</doctrine-mapping>
+```
+
+*src/Acme/TagBundle/Resources/config/doctrine/Tagging.orm.xml*:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Acme\TagBundle\Entity\Tagging" table="acme_tagging">
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <many-to-one field="tag" target-entity="Acme\TagBundle\Entity\Tag">
+            <join-columns>
+                <join-column name="tag_id" referenced-column-name="id" />
+            </join-columns>
+        </many-to-one>
+
+        <unique-constraints>
+            <unique-constraint columns="tag_id,resource_type,resource_id" name="tagging_idx" />
+        </unique-constraints>
+
+    </entity>
+
+</doctrine-mapping>
+```
+
+<a name="taggable-entity"></a>
+
+## Making an Entity Taggable
+
+Suppose we have a `Post` entity, and we want to make it "taggable". The setup
+is simple: just add the `Taggable` interface and add the necessary 3 methods:
+
+```php
+<?php
+
+namespace Acme\BlogBundle\Entity;
+
+use DoctrineExtensions\Taggable\Taggable;
+use Doctrine\Common\Collections\ArrayCollection;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="acme_post")
+ */
+class Post implements Taggable
+{
+    public function getTags()
+    {
+        $this->tags = $this->tags ?: new ArrayCollection();
+
+        return $this->tags;
+    }
+
+    public function getTaggableType()
+    {
+        return 'acme_tag';
+    }
+
+    public function getTaggableId()
+    {
+        return $this->getId();
+    }
+}
+```
+
+That's it! As you'll see in the next section, the tag manager can now manage
+the tags that are associated with your entity.
+
+<a name="using-tags"></a>
+
+## Using Tags
+
+The bundle works by using a "tag manager", which is responsible for creating
+tags and adding them to your entities. For some really good usage instructions,
+see [Using TagManager](https://github.com/FabienPennequin/DoctrineExtensions-Taggable).
+
+Basically, the idea is this. Instead of setting tags directly on your entity
+(e.g. Post), you'll use the tag manager to set the tags for you. Let's see
+how this looks from inside a controller. The tag manager is available as
+the `fpn_tag.tag_manager` service:
+
+    use Acme\BlogBundle\Entity\Post;
+
+    public function createTagsAction()
+    {
+        // create your entity
+        $post = new Post();
+        $post->setTitle('foo');
+
+        $tagManager = $this->get('fpn_tag.tag_manager');
+
+        // ask the tag manager to create a Tag object
+        $fooTag = $this->getTagManager()->loadOrCreateTag('foo');
+
+        // assign the foo tag to the post
+        $tagManager->addTag($fooTag, $post);
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        // persist and flush the new post
+        $em->persist($post);
+        $em->flush();
+
+        // after flushing the post, tell the tag manager to actually save the tags
+        $tagManager->saveTagging($post);
+
+        // ...
+    }
