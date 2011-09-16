@@ -1,7 +1,7 @@
 FPNTagBundle
 ============
 
-This bundles adds tagging to your Symfony project, with the ability to associate
+This bundle adds tagging to your Symfony project, with the ability to associate
 tags with any number of different entities. This bundle integrates the
 [DoctrineExtensions-Taggable](https://github.com/FabienPennequin/DoctrineExtensions-Taggable)
 library, which handles most of the hard work.
@@ -205,7 +205,7 @@ the `fpn_tag.tag_manager` service:
         $tagManager = $this->get('fpn_tag.tag_manager');
 
         // ask the tag manager to create a Tag object
-        $fooTag = $this->getTagManager()->loadOrCreateTag('foo');
+        $fooTag = $tagManager()->loadOrCreateTag('foo');
 
         // assign the foo tag to the post
         $tagManager->addTag($fooTag, $post);
