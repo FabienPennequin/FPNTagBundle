@@ -37,7 +37,8 @@ Next, update your autoloader and add the following entry:
     // app/autoload.php
     $loader->registerNamespaces(array(
         // ...
-        'FPN'               => __DIR__.'/../vendor/bundles',
+        'FPN'                => __DIR__.'/../vendor/bundles',
+        'DoctrineExtensions' => __DIR__.'/../vendor/doctrine-extensions-taggable/lib',
     ));
 
 ### Register the bundle
@@ -140,6 +141,22 @@ the `Resources/config/doctrine` directory of your bundle:
 
 <a name="taggable-entity"></a>
 
+## Define classes on configuration
+
+On your configuration you have to define tag and tagging classes.
+
+Example on yaml:
+
+```yaml
+
+fpn_tag:
+    model:
+        tag_class:     Acme\TagBundle\Entity\Tag
+        tagging_class: Acme\TagBundle\Entity\Tag
+
+```
+
+
 ## Making an Entity Taggable
 
 Suppose we have a `Post` entity, and we want to make it "taggable". The setup
@@ -221,4 +238,7 @@ the `fpn_tag.tag_manager` service:
         $tagManager->saveTagging($post);
 
         // ...
+
+        // Load tagging ...
+        $tagManager->loadTagging($post);
     }
