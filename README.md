@@ -238,4 +238,7 @@ the `fpn_tag.tag_manager` service:
         $tagManager->saveTagging($post);
 
         // ...
+
+        // Load tagging ...
+        $tagManager->loadTagging($post);
     }
