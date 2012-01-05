@@ -37,7 +37,8 @@ Next, update your autoloader and add the following entry:
     // app/autoload.php
     $loader->registerNamespaces(array(
         // ...
-        'FPN'               => __DIR__.'/../vendor/bundles',
+        'FPN'                => __DIR__.'/../vendor/bundles',
+        'DoctrineExtensions' => __DIR__.'/../vendor/doctrine-extensions-taggable/lib',
     ));
 
 ### Register the bundle
