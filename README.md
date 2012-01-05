@@ -140,6 +140,22 @@ the `Resources/config/doctrine` directory of your bundle:
 
 <a name="taggable-entity"></a>
 
+## Define classes on configuration
+
+On your configuration you have to define tag and tagging classes.
+
+Example on yaml:
+
+```yaml
+
+fpn_tag:
+    model:
+        tag_class:     Acme\TagBundle\Entity\Tag
+        tagging_class: Acme\TagBundle\Entity\Tag
+
+```
+
+
 ## Making an Entity Taggable
 
 Suppose we have a `Post` entity, and we want to make it "taggable". The setup
