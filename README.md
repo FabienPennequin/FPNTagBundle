@@ -152,7 +152,7 @@ Example on yaml:
 fpn_tag:
     model:
         tag_class:     Acme\TagBundle\Entity\Tag
-        tagging_class: Acme\TagBundle\Entity\Tag
+        tagging_class: Acme\TagBundle\Entity\Tagging
 
 ```
 
