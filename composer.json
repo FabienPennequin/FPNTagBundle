@@ -1,0 +1,23 @@
+{
+    "name": "fpn/tag-bundle",
+    "description": "FPN Tag Bundle",
+    "keywords": ["tagging", "tag"],
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fabien Pennequin",
+            "email": "fabien@pennequin.me"
+        }
+    ],
+    "require": {
+        "symfony/framework-bundle": "2.0.*",
+        "fpn/doctrine-extensions-taggable": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "FPN\\TagBundle": ""
+        }
+    },
+    "target-dir": "FPN/TagBundle"
+}
