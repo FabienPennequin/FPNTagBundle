@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "symfony/framework-bundle": "2.0.*",
+        "symfony/framework-bundle": ">=2.0",
         "fpn/doctrine-extensions-taggable": "*"
     },
     "autoload": {
