@@ -27,10 +27,6 @@ You can use composer to add the bundle :
 Or you can edit your composer.json, and add :
 
     "require": {
-        "php": ">=5.3.2",
-        "symfony/symfony": "2.1.*",
-        "_comment":"your ther packages",
-
         "fpn/tag-bundle":"dev-master",
     }
 
