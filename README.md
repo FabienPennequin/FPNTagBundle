@@ -135,7 +135,7 @@ You can also use Annotations :
 ```php
 namespace Acme\TagBundle\Entity;
 
-use \FPN\TagBundle\Entity\Tagging as BaseTagging;
+use \FPN\TagBundle\Entity\Tag as BaseTag;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
