@@ -16,30 +16,19 @@ library, which handles most of the hard work.
 
 ## Installation
 
-Start by adding the following entries to your `deps` file:
+### Use Composer
 
-### Using the `deps` file
+You can use composer to add the bundle :
 
-```
-; Taggable stuff
-[doctrine-extensions-taggable]
-    git=git://github.com/FabienPennequin/DoctrineExtensions-Taggable.git
+    ``` sh
+    $ php composer.phar require fpn/tag-bundle
+    ```
 
-[FPNTagBundle]
-    git=git://github.com/FabienPennequin/FPNTagBundle.git
-    target=bundles/FPN/TagBundle
-```
+Or you can edit your composer.json, and add :
 
-### Update the autoloader
-
-Next, update your autoloader and add the following entry:
-
-    // app/autoload.php
-    $loader->registerNamespaces(array(
-        // ...
-        'FPN'                => __DIR__.'/../vendor/bundles',
-        'DoctrineExtensions' => __DIR__.'/../vendor/doctrine-extensions-taggable/lib',
-    ));
+    "require": {
+        "fpn/tag-bundle":"dev-master",
+    }
 
 ### Register the bundle
 
@@ -83,8 +72,8 @@ class Tagging extends BaseTagging
 }
 ```
 
-Next, you'll need to add a little bit of mapping information. The easiest
-way to do this is to create the following two XML files and place them in
+Next, you'll need to add a little bit of mapping information. One way
+to do this is to create the following two XML files and place them in
 the `Resources/config/doctrine` directory of your bundle:
 
 *src/Acme/TagBundle/Resources/config/doctrine/Tag.orm.xml*:
@@ -139,6 +128,74 @@ the `Resources/config/doctrine` directory of your bundle:
 </doctrine-mapping>
 ```
 
+You can also use Annotations :
+
+*src/Acme/TagBundle/Entity/Tag.php*:
+
+```php
+namespace Acme\TagBundle\Entity;
+
+use \FPN\TagBundle\Entity\Tagging as BaseTagging;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Acme\TagBundle\Entity\Tag
+ *
+ * @ORM\Table()
+ * @ORM\Entity
+ */
+class Tag extends BaseTag
+{
+    /**
+     * @var integer $id
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Tagging", mappedBy="tag", fetch="EAGER")
+     **/
+    protected $tagging;
+}
+```
+
+*src/Acme/TagBundle/Entity/Tagging.php*:
+
+```php
+namespace Acme\TagBundle\Entity;
+
+use \FPN\TagBundle\Entity\Tagging as BaseTagging;
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
+
+/**
+ * Acme\TagBundle\Entity\Tagging
+ *
+ * @ORM\Table(uniqueConstraints={@UniqueConstraint(name="tagging_idx", columns={"tag_id", "resource_type", "resource_id"})})
+ * @ORM\Entity
+ */
+class Tagging extends BaseTagging
+{
+    /**
+     * @var integer $id
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Tag")
+     * @ORM\JoinColumn(name="tag_id", referencedColumnName="id")
+     **/
+    protected $tag;
+}
+```
+
 <a name="taggable-entity"></a>
 
 ## Define classes on configuration
@@ -177,6 +234,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Post implements Taggable
 {
+    private $tags;
+    
     public function getTags()
     {
         $this->tags = $this->tags ?: new ArrayCollection();
@@ -223,7 +282,7 @@ the `fpn_tag.tag_manager` service:
         $tagManager = $this->get('fpn_tag.tag_manager');
 
         // ask the tag manager to create a Tag object
-        $fooTag = $tagManager()->loadOrCreateTag('foo');
+        $fooTag = $tagManager->loadOrCreateTag('foo');
 
         // assign the foo tag to the post
         $tagManager->addTag($fooTag, $post);
