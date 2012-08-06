@@ -16,6 +16,10 @@ class Tag extends BaseTag
 {
     protected $slug;
 
+    public function __toString() {
+        return $this->getName();
+    }
+
     /**
      * Returns tag slug
      * 
