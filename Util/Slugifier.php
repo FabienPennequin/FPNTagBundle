@@ -17,7 +17,18 @@ class Slugifier implements SlugifierInterface
         $slug = mb_convert_case($name, MB_CASE_LOWER, mb_detect_encoding($name));
         $slug = str_replace(' ', '-', $slug);
         $slug = str_replace('--', '-', $slug);
+        //Remove accents and spanish letter ñ
+        $slug = $this->normalize($slug);
 
         return $slug;
+    }
+    
+    private function normalize ($cadena){
+        $originales = 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿŔŕÑñ';
+        $modificadas ='aaaaaaaceeeeiiiidnoooooouuuuybsaaaaaaaceeeeiiiidnoooooouuuyybyrrnn';
+        $cadena = utf8_decode($cadena);
+        $cadena = strtr($cadena, utf8_decode($originales), $modificadas);
+        $cadena = strtolower($cadena);
+        return utf8_encode($cadena);
     }
 }
