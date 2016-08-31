@@ -20,9 +20,9 @@ library, which handles most of the hard work.
 
 You can use composer to add the bundle :
 
-    ```sh
+```sh
     $ php composer.phar require fpn/tag-bundle
-    ```
+```
 
 Or you can edit your composer.json, and add :
 
