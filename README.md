@@ -270,7 +270,7 @@ Basically, the idea is this. Instead of setting tags directly on your entity
 (e.g. Post), you'll use the tag manager to set the tags for you. Let's see
 how this looks from inside a controller. The tag manager is available as
 the `fpn_tag.tag_manager` service:
-
+```php
     use Acme\BlogBundle\Entity\Post;
 
     public function createTagsAction()
@@ -301,3 +301,4 @@ the `fpn_tag.tag_manager` service:
         // Load tagging ...
         $tagManager->loadTagging($post);
     }
+```
