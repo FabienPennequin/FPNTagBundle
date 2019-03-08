@@ -12,7 +12,7 @@
 
 
     <services>
-        <service id="fpn_tag.tag_manager" class="%fpn_tag.tag_manager.class%">
+        <service id="fpn_tag.tag_manager" class="%fpn_tag.tag_manager.class%" public="true">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument>%fpn_tag.entity.tag.class%</argument>
             <argument>%fpn_tag.entity.tagging.class%</argument>
